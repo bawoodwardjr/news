@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>News Article Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>News Article Generator</h1>
+
+  <label>Topic:</label>
+  <select id="topic" onchange="toggleOther('topic')">
+    <option value="Political conflict">Political Conflict</option>
+    <option value="Climate Change">Climate Change</option>
+    <option value="Technology">Technology</option>
+    <option value="Economy">Economy</option>
+    <option value="None">None</option>
+    <option value="other">Other</option>
+  </select>
+  <input type="text" id="topic-other" placeholder="Enter custom topic" style="display: none;" />
+
+  <label>Region:</label>
+  <select id="region" onchange="toggleOther('region')">
+    <option value="Global">Global</option>
+    <option value="United States">United States</option>
+    <option value="Middle East">Middle East</option>
+    <option value="Europe">Europe</option>
+    <option value="China">China</option>
+    <option value="Central Asia">Central Asia</option>
+    <option value="Southest Asia">Southeast Asia</option>
+    <option value="Russia">Russia</option>
+    <option value="Western Africa">Western Africa</option>
+    <option value="Eastern Africa">Eastern Africa</option>
+    <option value="Southern Africa">Southern Africa</option>
+    <option value="South America">South America</option>
+    <option value="other">Other</option>
+  </select>
+  <input type="text" id="region-other" placeholder="Enter custom region" style="display: none;" />
+
+  <label>Depth:</label>
+  <select id="depth">
+    <option>Short summary</option>
+    <option>Article</option>
+    <option>Detailed analysis</option>
+  </select>
+
+  <label>Bias:</label>
+  <select id="style">
+    <option>Neutral</option>
+    <option>Right Wing</option>
+    <option>Left Wing</option>
+  </select>
+
+  <button onclick="generate()">Generate Article</button>
+
+  <div id="output"></div>
+
+  <script>
+    function toggleOther(type) {
+      const select = document.getElementById(type);
+      const otherInput = document.getElementById(`${type}-other`);
+      otherInput.style.display = select.value === "other" ? "block" : "none";
+    }
+
+    async function generate() {
+      const topicSelect = document.getElementById("topic");
+      const topic = topicSelect.value === "other" ? document.getElementById("topic-other").value : topicSelect.value;
+
+      const regionSelect = document.getElementById("region");
+      const region = regionSelect.value === "other" ? document.getElementById("region-other").value : regionSelect.value;
+
+      const depth = document.getElementById("depth").value;
+      const style = document.getElementById("style").value;
+
+      const res = await fetch("/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topic, region, depth, style }),
+      });
+
+      const data = await res.json();
+      document.getElementById("output").textContent = data.article || "Error generating article.";
+    }
+  </script>
+</body>
+</html>
